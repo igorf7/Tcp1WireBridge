@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "tcpclient.h"
 #include <QThread>
+#include <QMessageBox>
 
 /**
  * @brief MainWindow Class Constructor
@@ -37,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->deviceComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDeviceComboBoxChanged(int)));
     connect(ui->startPollingButton, SIGNAL(clicked()), this, SLOT(onStartButtonClicked()));
     connect(ui->clearPushButton, SIGNAL(clicked()), this, SLOT(onClearButtonClicked()));
+    connect(ui->infoPushButton, SIGNAL(clicked()), this, SLOT(onInfoButtonClicked()));
 
     /* TCP connection settings by default */
     ui->tcpHostnameEdit->setText("192.168.1.7");
@@ -166,6 +168,15 @@ void MainWindow::onClearButtonClicked()
 }
 
 /**
+ * @brief MainWindow::onInfoButtonClicked
+ */
+void MainWindow::onInfoButtonClicked()
+{
+    quint8 family = OneWire::getFamily(ui->deviceComboBox->currentText());
+    QMessageBox::information(this, tr("Description"), OneWire::getDescription(family));
+}
+
+/**
  * @brief MainWindow::onSearchButtonClicked
  */
 void MainWindow::onSearchButtonClicked()
@@ -173,6 +184,7 @@ void MainWindow::onSearchButtonClicked()
     if (!isTcpConnected) return;
 
     ui->startPollingButton->setEnabled(false);
+    ui->infoPushButton->setEnabled(false);
 
     isOwSearchDone = false;
     owDeviceAddressList.clear();
@@ -353,10 +365,14 @@ void MainWindow::onTcpResponse(const QByteArray &response)
             isOwSearchDone = true;
             this->initDeviceComboBox();
             dev_cnt = owDeviceAddressList.size();
-            if (dev_cnt > 0)
+            if (dev_cnt > 0) {
                 ui->startPollingButton->setEnabled(true);
-            else
+                ui->infoPushButton->setEnabled(true);
+            }
+            else {
                 ui->startPollingButton->setEnabled(false);
+                ui->infoPushButton->setEnabled(false);
+            }
 
             statusBar()->showMessage(tr("Total 1-Wire devices found: ") +
                                      QString::number(dev_cnt));

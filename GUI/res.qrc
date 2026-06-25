@@ -3,5 +3,6 @@
         <file>images/search.png</file>
         <file>images/connect.png</file>
         <file>images/disconnect.png</file>
+        <file>images/Info.svg</file>
     </qresource>
 </RCC>

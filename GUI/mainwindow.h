@@ -45,6 +45,7 @@ private slots:
     void onStartButtonClicked();
     void onClearButtonClicked();
     void onDeviceComboBoxChanged(int index);
+    void onInfoButtonClicked();
 
 private:
     Ui::MainWindow *ui;
